@@ -1,0 +1,4 @@
+-r requirements.txt
+transformers==4.48.1
+torch==2.5.1
+pytesseract==0.3.13

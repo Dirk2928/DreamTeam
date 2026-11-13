@@ -1,0 +1,5 @@
+import Link from "next/link";
+
+export function AuthLayout({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+  return <main className="grid min-h-screen bg-white lg:grid-cols-2"><section className="flex items-center justify-center p-6 sm:p-10"><div className="w-full max-w-md"><Link href="/" className="mb-12 flex items-center gap-2 text-xl font-black text-[#0c2723]"><span className="grid size-9 place-items-center rounded-xl bg-teal-400">P</span>PKonek</Link><h1 className="text-3xl font-bold tracking-tight text-slate-950">{title}</h1><p className="mb-8 mt-2 text-slate-500">{subtitle}</p>{children}</div></section><aside className="soft-grid hidden items-center justify-center overflow-hidden bg-[#0c2723] p-12 lg:flex"><div className="max-w-lg text-white"><div className="mb-8 grid size-16 place-items-center rounded-2xl bg-teal-400 text-3xl font-black text-[#0c2723]">P</div><blockquote className="text-4xl font-bold leading-tight tracking-tight">“Good governance starts when every voice has a clear path to action.”</blockquote><p className="mt-6 text-teal-100/70">Report. Track. Verify. Together.</p></div></aside></main>;
+}

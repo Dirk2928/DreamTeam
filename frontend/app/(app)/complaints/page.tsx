@@ -1,0 +1,21 @@
+"use client";
+import Link from "next/link";
+import { FilePlus2, ListFilter, MapPin, Search, UsersRound } from "lucide-react";
+import { useMemo, useState } from "react";
+import { api } from "@/lib/api";
+import { useApi } from "@/lib/use-api";
+import { categoryColor, complaintReference, formatDate } from "@/lib/utils";
+import { useAuth } from "@/components/auth-provider";
+import { ApiNotice, Button, Card, Input, LoadingState, PageTitle, Select, SeverityBadge, StatusBadge } from "@/components/ui";
+
+export default function ComplaintsPage() {
+  const { user } = useAuth();
+  const result = useApi(() => api.complaints.list(), [], []);
+  const categoryResult = useApi(() => api.categories.list(), [], []);
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const shown = useMemo(() => result.data.filter((item) => (!query || `${item.title} ${item.id} ${item.address ?? ""}`.toLowerCase().includes(query.toLowerCase())) && (!status || item.status === status) && (!categoryId || item.category_id === categoryId)), [result.data, query, status, categoryId]);
+
+  return <div><PageTitle eyebrow="Community reports" title="Complaints" description="Browse concerns, follow progress, and review their current status." action={user?.role === "citizen" ? <Link href="/complaints/new"><Button><FilePlus2 size={17}/> New report</Button></Link> : undefined}/><ApiNotice error={result.error || categoryResult.error} retry={() => { result.reload(); categoryResult.reload(); }}/><Card className="mb-5 grid gap-3 p-4 md:grid-cols-[1fr_190px_190px_auto]"><label className="relative"><Search className="absolute left-3 top-3.5 text-slate-400" size={17}/><Input className="pl-9" placeholder="Search reference, issue, or place..." value={query} onChange={(event) => setQuery(event.target.value)}/></label><Select value={status} onChange={(event) => setStatus(event.target.value)}><option value="">All statuses</option>{["submitted", "acknowledged", "assigned", "in_progress", "pending_verification", "closed", "reopened", "rejected"].map((value) => <option key={value} value={value}>{value.replaceAll("_", " ")}</option>)}</Select><Select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}><option value="">All categories</option>{categoryResult.data.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</Select><Button variant="secondary" onClick={() => { setQuery(""); setStatus(""); setCategoryId(""); }}><ListFilter size={17}/> Reset</Button></Card>{result.loading ? <LoadingState/> : <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{shown.map((item) => { const category = categoryResult.data.find((entry) => entry.id === item.category_id); return <Link href={`/complaints/${item.id}`} key={item.id}><Card className="group h-full overflow-hidden transition hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-lg"><div className="h-1.5" style={{ background: categoryColor(item.category_id) }}/><div className="p-5"><div className="flex items-center justify-between gap-2"><span className="text-xs font-bold text-teal-700">{complaintReference(item.id)}</span><StatusBadge status={item.status}/></div><h2 className="mt-4 line-clamp-2 text-lg font-bold text-slate-900 group-hover:text-teal-800">{item.title}</h2><p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{item.description}</p><div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4"><span className="flex min-w-0 items-center gap-1 truncate text-xs text-slate-500"><MapPin size={13}/>{item.address ?? "Pasig City"}</span><span className="flex items-center gap-1 text-xs text-slate-500"><UsersRound size={13}/>{item.me_too_count}</span></div><div className="mt-3 flex items-center justify-between"><span className="text-xs font-semibold text-slate-500">{category?.name ?? "Category"}</span><SeverityBadge severity={item.severity}/></div><span className="mt-2 block text-right text-xs text-slate-400">{formatDate(item.created_at)}</span></div></Card></Link>; })}</div>}{!result.loading && shown.length === 0 && <div className="py-20 text-center text-slate-500">No reports match these filters.</div>}</div>;
+}
