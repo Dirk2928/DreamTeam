@@ -28,7 +28,7 @@ Interactive API documentation is available at `http://localhost:8000/docs`. Appl
 - `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_PASSWORD`: create the first administrator at startup if absent.
 - `LUMEN_API_BASE`: Lumen Suite gateway origin, currently `https://api.staging.nonlive.lumen.bayanichain.tech`.
 - `LUMEN_API_KEY`, `LUMEN_API_SECRET`: organization credentials sent as `lumen-api-key` and `lumen-api-secret`; the key needs AI Chat and OCR grants.
-- `LUMEN_INSTANCE_ID`: optional AI Chat instance; when blank, PKonek selects the first active instance returned by Lumen.
+- `LUMEN_INSTANCE_ID`: optional AI Chat instance; when blank, PKonek selects the first active instance returned by Lumen. PKonek sends its application facts and broad assistant role with every turn because the PLP hackathon blank instance expects teams to define behavior in their messages.
 - `ENABLE_CLIP`, `CLIP_MODEL`: optional local pretrained CLIP. Install `requirements-ai.txt` first.
 - `ENABLE_OCR`, `TESSERACT_CMD`: optional local pytesseract fallback when Lumen OCR is unavailable. Tesseract must also be installed on the host.
 - `SCHEDULER_ENABLED`, `SLA_WARNING_HOURS`, `AUTO_CLOSE_HOURS`: SLA worker controls.

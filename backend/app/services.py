@@ -273,10 +273,27 @@ async def chatbot_reply(message: str, session_key: str | None = None) -> tuple[s
                 if session_key:
                     _lumen_sessions[session_key] = (instance_id, session_id)
 
+            assistant_prompt = f"""PKONEK ASSISTANT ROLE
+You are PKonek AI, a helpful general-purpose assistant inside a Pasig City civic reporting application.
+Answer any lawful user question directly and clearly. Do not reject a question merely because it is not about complaints.
+Reply in the language used by the user. If you are uncertain, say what is uncertain instead of inventing facts.
+
+PKONEK APPLICATION FACTS
+- Citizens submit a written report, select a category, pin a Pasig location, and may upload photos.
+- Nearby duplicate reports can be supported with Me Too.
+- Officials acknowledge, accept assignments, post progress updates, and mark completed work resolved.
+- A resolved report becomes pending verification. The reporting citizen checks the result and either accepts it, which closes the report, or rejects it, which automatically reopens the report for more work.
+- Pending verification reports may auto-close after the configured verification window.
+- PKonek does not replace emergency services; advise calling 911 for immediate danger.
+- Staff AI evidence review is decision support only and cannot prove that a report or photo is authentic.
+
+USER QUESTION
+{message}
+"""
             response = await client.post(
                 f"{base}/instances/{encoded_instance}/sessions/{quote(session_id, safe='')}/messages",
                 headers={**headers, "Content-Type": "application/json"},
-                json={"message": message},
+                json={"message": assistant_prompt},
             )
             if response.is_error:
                 raise HTTPException(502, f"Lumen chat failed: {_lumen_error(response)}")
